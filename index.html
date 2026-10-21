@@ -666,43 +666,49 @@
 
         #footer-area {
             flex: 0 0 auto;
-            height: 22vh;
+            height: calc(11vh + env(safe-area-inset-bottom, 0px)); /* 手機版高度減半（原 22vh），組合區改左右並排 */
+            min-height: 76px;
             border-radius: 15px 15px 0 0;
             border-bottom: none;
-            padding: 5px;
-            padding-bottom: calc(5px + env(safe-area-inset-bottom, 0px));
+            padding: 4px;
+            padding-bottom: calc(4px + env(safe-area-inset-bottom, 0px));
             box-sizing: border-box;
+            gap: 5px;
         }
 
         .combo-display {
-            flex-direction: column;
+            flex-direction: row;
+            border-width: 2px;
         }
 
         .combo-parts-wrapper {
-            width: 100%;
-            border-right: none;
-            border-bottom: 1px solid #eee;
-            padding: 2px 0;
+            flex: 0 0 auto;
+            gap: 6px;
+            border-right: 1px solid #eee;
+            padding: 0 2px;
         }
 
         #display-result-container {
-            width: 100%;
-            padding: 2px 0;
+            flex: 1.7;
+            padding: 0 2px;
         }
 
+        .combo-part-group { gap: 1px; }
         .combo-val { font-size: 3.5vmin; }
-        .combo-label { font-size: 2.5vmin; }
+        .combo-label { font-size: 2.3vmin; padding: 0 3px; }
         
         #display-result { 
-            font-size: 10vmin; 
+            font-size: 7vmin; 
             line-height: 1;
         }
         
         #display-result span {
-            font-size: 3.5vmin !important;
-            margin-top: 5px;
-            line-height: 1.2;
+            font-size: 2.3vmin !important;
+            margin-top: 2px;
+            line-height: 1.15;
         }
+
+        .action-group { gap: 4px; }
 
         .action-btn { font-size: 3.5vmin; }
         
