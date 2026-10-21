@@ -11,7 +11,7 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="author" content="詹宗龍（臺中明道中學）">
 <meta name="copyright" content="© 2026 詹宗龍（臺中明道中學）。保留一切權利。">
 <title>羅馬字拼音互動遊戲</title>
@@ -58,6 +58,7 @@
         padding: 0;
         width: 100vw;
         height: 100vh;
+        height: var(--app-h, 100dvh); /* 手機：扣掉瀏覽器工具列的實際可視高度 */
         background: linear-gradient(135deg, #1cb0f6 0%, #1799d6 100%);
         display: flex;
         justify-content: center;
@@ -595,6 +596,7 @@
         #game-container {
             width: 100vw;
             height: 100vh;
+            height: var(--app-h, 100dvh);
             max-height: none;
             max-width: none;
             border-radius: 0;
@@ -668,6 +670,8 @@
             border-radius: 15px 15px 0 0;
             border-bottom: none;
             padding: 5px;
+            padding-bottom: calc(5px + env(safe-area-inset-bottom, 0px));
+            box-sizing: border-box;
         }
 
         .combo-display {
@@ -717,6 +721,19 @@
     }
 
 </style>
+<script>
+    /* 手機瀏覽器（含 LINE 內建瀏覽器）100vh 會算進底部工具列，改用實際可視高度 */
+    (function () {
+        function setAppH() {
+            var h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+            document.documentElement.style.setProperty('--app-h', h + 'px');
+        }
+        setAppH();
+        window.addEventListener('resize', setAppH);
+        window.addEventListener('orientationchange', setAppH);
+        if (window.visualViewport) window.visualViewport.addEventListener('resize', setAppH);
+    })();
+</script>
 </head>
 <body oncontextmenu="return false;">
 
