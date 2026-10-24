@@ -120,13 +120,42 @@
     }
 
     /* --- 輪播鈕：標題列右側，依序播放該區所有音檔 --- */
-    .auto-btn {
+    .auto-ctrl {
         position: absolute;
         right: 0.5em;
         top: 3px;
         bottom: 3px;
+        display: flex;
+        align-items: stretch;
+        gap: 0.25em;
+    }
+    .speed-btn {
+        border-radius: 999px;
+        border: 2px solid rgba(255,255,255,0.9);
+        background: rgba(255,255,255,0.95);
+        font-family: var(--font-family);
+        font-size: clamp(10px, 0.62em, 18px);
+        font-weight: 900;
+        line-height: 1;
+        padding: 0 0.5em;
+        cursor: pointer;
+        text-shadow: none;
+        white-space: nowrap;
+        box-shadow: 0 2px 0 rgba(0,0,0,0.15);
+    }
+    .section-initial .speed-btn { color: var(--initial-color); }
+    .section-final .speed-btn   { color: var(--final-color); }
+    .section-tone .speed-btn    { color: var(--tone-color); }
+    .speed-btn:active { transform: scale(0.94); }
+    /* 橫向版面的聲調區較窄：標題字讓出右側按鈕的空間 */
+    @media (min-width: 769px) and (orientation: landscape) {
+        .section-tone .section-label { padding-right: 4em; }
+    }
+
+    .auto-btn {
+        height: 100%;
         aspect-ratio: 1 / 1;
-        border-radius: 50%;
+border-radius: 50%;
         border: 2px solid rgba(255,255,255,0.9);
         background: rgba(255,255,255,0.95);
         font-size: 1em;
@@ -816,7 +845,7 @@
     <div class="game-area">
         
         <div class="section section-initial" style="flex: 2.2;">
-            <div class="section-label">聲母<button class="auto-btn" data-auto="initial" title="輪播聲母" aria-label="輪播聲母" onclick="toggleAutoPlay('initial', this)"></button></div>
+            <div class="section-label">聲母<span class="auto-ctrl"><button class="speed-btn" title="輪播速度（點一下切換）" aria-label="輪播速度" onclick="cycleAutoSpeed()">0.5x</button><button class="auto-btn" data-auto="initial" title="輪播聲母" aria-label="輪播聲母" onclick="toggleAutoPlay('initial', this)"></button></span></div>
             <div class="section-content">
                 <div class="row">
                     <div class="category-label">合唇音</div>
@@ -842,7 +871,7 @@
         </div>
 
         <div class="section section-final" style="flex: 4;">
-            <div class="section-label"><a class="egg-link" href="https://cyril-mingdao.github.io/Similar-sounds/" target="_blank" rel="noopener">韻母</a><button class="auto-btn" data-auto="final" title="輪播韻母" aria-label="輪播韻母" onclick="toggleAutoPlay('final', this)"></button></div>
+            <div class="section-label"><a class="egg-link" href="https://cyril-mingdao.github.io/Similar-sounds/" target="_blank" rel="noopener">韻母</a><span class="auto-ctrl"><button class="speed-btn" title="輪播速度（點一下切換）" aria-label="輪播速度" onclick="cycleAutoSpeed()">0.5x</button><button class="auto-btn" data-auto="final" title="輪播韻母" aria-label="輪播韻母" onclick="toggleAutoPlay('final', this)"></button></span></div>
             <div class="section-content">
                 <div class="row">
                     <div class="category-label">元音</div>
@@ -909,7 +938,7 @@
         </div>
 
         <div class="section section-tone" style="flex: 1.2;">
-            <div class="section-label"><a class="egg-link" href="https://kr.hujiang.com/fayinbiao/#pindu" target="_blank" rel="noopener">聲調</a><button class="auto-btn" data-auto="tone" title="輪播聲調" aria-label="輪播聲調" onclick="toggleAutoPlay('tone', this)"></button></div>
+            <div class="section-label"><a class="egg-link" href="https://kr.hujiang.com/fayinbiao/#pindu" target="_blank" rel="noopener">聲調</a><span class="auto-ctrl"><button class="speed-btn" title="輪播速度（點一下切換）" aria-label="輪播速度" onclick="cycleAutoSpeed()">0.5x</button><button class="auto-btn" data-auto="tone" title="輪播聲調" aria-label="輪播聲調" onclick="toggleAutoPlay('tone', this)"></button></span></div>
             <div class="section-content">
                 <div class="row" id="tone-number-row">
                     </div>
@@ -1214,6 +1243,7 @@
         renderGrid('initial', initialsData);
         renderGrid('final', finalsData);
         renderTones();
+        showAutoSpeed();
     }
 
     // --- Rendering Helpers ---
@@ -1346,13 +1376,36 @@
 
     // --- 輪播：依序播放一整區音檔，播放中的牌卡換底色並捲到看得到的位置 ---
     let autoRun = null;
+    const AUTO_SPEEDS = [0.5, 0.75, 1, 1.5, 1.75];
+    let autoSpeed = 0.5; // 預設 0.5 倍
+    try {
+        const saved = parseFloat(localStorage.getItem('spell-auto-speed'));
+        if (AUTO_SPEEDS.includes(saved)) autoSpeed = saved;
+    } catch (e) {}
+
+    function showAutoSpeed() {
+        document.querySelectorAll('.speed-btn').forEach(btn => { btn.textContent = autoSpeed + 'x'; });
+    }
+
+    // 三區共用同一個速度；輪播中切換會立刻套用到正在播的音
+    function cycleAutoSpeed() {
+        autoSpeed = AUTO_SPEEDS[(AUTO_SPEEDS.indexOf(autoSpeed) + 1) % AUTO_SPEEDS.length];
+        try { localStorage.setItem('spell-auto-speed', String(autoSpeed)); } catch (e) {}
+        showAutoSpeed();
+        if (autoRun) {
+            audioPlayer.defaultPlaybackRate = autoSpeed;
+            audioPlayer.playbackRate = autoSpeed;
+        }
+    }
 
     function stopAutoPlay() {
         if (!autoRun) return;
         autoRun.cancelled = true;
         autoRun = null;
         audioPlayer.pause();
-        document.querySelectorAll('.tile.autoplaying').forEach(el => el.classList.remove('autoplaying'));
+        audioPlayer.defaultPlaybackRate = 1;
+        audioPlayer.playbackRate = 1;
+document.querySelectorAll('.tile.autoplaying').forEach(el => el.classList.remove('autoplaying'));
         document.querySelectorAll('.auto-btn.playing').forEach(btn => btn.classList.remove('playing'));
     }
 
@@ -1392,10 +1445,12 @@
                 resolve();
             };
             const watch = setInterval(() => { if (run.cancelled) finish(); }, 100);
-            const guard = setTimeout(finish, 15000);
+            const guard = setTimeout(finish, 15000 / autoSpeed);
             audioPlayer.addEventListener('ended', finish);
             audioPlayer.addEventListener('error', finish);
+            audioPlayer.defaultPlaybackRate = autoSpeed;
             audioPlayer.src = url;
+            audioPlayer.playbackRate = autoSpeed;
             audioPlayer.play().catch(finish);
         });
     }
