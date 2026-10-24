@@ -845,7 +845,7 @@ border-radius: 50%;
     <div class="game-area">
         
         <div class="section section-initial" style="flex: 2.2;">
-            <div class="section-label">聲母<span class="auto-ctrl"><button class="speed-btn" title="輪播速度（點一下切換）" aria-label="輪播速度" onclick="cycleAutoSpeed()">0.5x</button><button class="auto-btn" data-auto="initial" title="輪播聲母" aria-label="輪播聲母" onclick="toggleAutoPlay('initial', this)"></button></span></div>
+            <div class="section-label">聲母<span class="auto-ctrl"><button class="speed-btn" title="輪播速度（點一下切換）" aria-label="輪播速度" onclick="cycleAutoSpeed()">1.75x</button><button class="auto-btn" data-auto="initial" title="輪播聲母" aria-label="輪播聲母" onclick="toggleAutoPlay('initial', this)"></button></span></div>
             <div class="section-content">
                 <div class="row">
                     <div class="category-label">合唇音</div>
@@ -871,7 +871,7 @@ border-radius: 50%;
         </div>
 
         <div class="section section-final" style="flex: 4;">
-            <div class="section-label"><a class="egg-link" href="https://cyril-mingdao.github.io/Similar-sounds/" target="_blank" rel="noopener">韻母</a><span class="auto-ctrl"><button class="speed-btn" title="輪播速度（點一下切換）" aria-label="輪播速度" onclick="cycleAutoSpeed()">0.5x</button><button class="auto-btn" data-auto="final" title="輪播韻母" aria-label="輪播韻母" onclick="toggleAutoPlay('final', this)"></button></span></div>
+            <div class="section-label"><a class="egg-link" href="https://cyril-mingdao.github.io/Similar-sounds/" target="_blank" rel="noopener">韻母</a><span class="auto-ctrl"><button class="speed-btn" title="輪播速度（點一下切換）" aria-label="輪播速度" onclick="cycleAutoSpeed()">1.75x</button><button class="auto-btn" data-auto="final" title="輪播韻母" aria-label="輪播韻母" onclick="toggleAutoPlay('final', this)"></button></span></div>
             <div class="section-content">
                 <div class="row">
                     <div class="category-label">元音</div>
@@ -938,7 +938,7 @@ border-radius: 50%;
         </div>
 
         <div class="section section-tone" style="flex: 1.2;">
-            <div class="section-label"><a class="egg-link" href="https://kr.hujiang.com/fayinbiao/#pindu" target="_blank" rel="noopener">聲調</a><span class="auto-ctrl"><button class="speed-btn" title="輪播速度（點一下切換）" aria-label="輪播速度" onclick="cycleAutoSpeed()">0.5x</button><button class="auto-btn" data-auto="tone" title="輪播聲調" aria-label="輪播聲調" onclick="toggleAutoPlay('tone', this)"></button></span></div>
+            <div class="section-label"><a class="egg-link" href="https://kr.hujiang.com/fayinbiao/#pindu" target="_blank" rel="noopener">聲調</a><span class="auto-ctrl"><button class="speed-btn" title="輪播速度（點一下切換）" aria-label="輪播速度" onclick="cycleAutoSpeed()">1.75x</button><button class="auto-btn" data-auto="tone" title="輪播聲調" aria-label="輪播聲調" onclick="toggleAutoPlay('tone', this)"></button></span></div>
             <div class="section-content">
                 <div class="row" id="tone-number-row">
                     </div>
@@ -1377,7 +1377,7 @@ border-radius: 50%;
     // --- 輪播：依序播放一整區音檔，播放中的牌卡換底色並捲到看得到的位置 ---
     let autoRun = null;
     const AUTO_SPEEDS = [0.5, 0.75, 1, 1.5, 1.75];
-    let autoSpeed = 0.5; // 預設 0.5 倍
+    let autoSpeed = 1.75; // 預設 1.75 倍
     try {
         const saved = parseFloat(localStorage.getItem('spell-auto-speed'));
         if (AUTO_SPEEDS.includes(saved)) autoSpeed = saved;
