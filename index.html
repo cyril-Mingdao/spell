@@ -718,6 +718,10 @@ border-radius: 50%;
         .category-label {
             width: 1.5em;
             font-size: 2.5vmin;
+            white-space: nowrap; /* 直向螢幕：合唇音／舌尖音…三字不斷行 */
+            letter-spacing: 0;
+            padding: 0;
+            overflow: hidden;
         }
 
         .tile-text {
@@ -1695,4 +1699,4 @@ document.querySelectorAll('.tile.autoplaying').forEach(el => el.classList.remove
 
 </script>
 </body>
-</html>
+</html>
