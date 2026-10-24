@@ -69,9 +69,8 @@
 
     #game-container {
         width: 98vw;
-        height: 42.875vw; /* Desktop Ratio */
-        max-height: 95vh;
-        max-width: 224vh;
+        height: calc(var(--app-h, 100dvh) - 2vmin); /* 響應式：填滿可視高度 */
+        max-width: 230vh;
         background-color: white;
         border-radius: 15px;
         box-shadow: 0 10px 0 rgba(0,0,0,0.2);
@@ -117,6 +116,51 @@
         z-index: 2;
         line-height: 1.2;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        position: relative;
+    }
+
+    /* --- 輪播鈕：標題列右側，依序播放該區所有音檔 --- */
+    .auto-btn {
+        position: absolute;
+        right: 0.5em;
+        top: 3px;
+        bottom: 3px;
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
+        border: 2px solid rgba(255,255,255,0.9);
+        background: rgba(255,255,255,0.95);
+        font-size: 1em;
+        line-height: 1;
+        padding: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-shadow: none;
+        box-shadow: 0 2px 0 rgba(0,0,0,0.15);
+    }
+    .auto-btn::before { content: '▶'; font-size: 0.6em; margin-left: 0.12em; }
+    .auto-btn.playing::before { content: '■'; margin-left: 0; font-size: 0.7em; }
+    .auto-btn.playing { animation: auto-pulse 1s ease-in-out infinite; }
+    .section-initial .auto-btn { color: var(--initial-color); }
+    .section-final .auto-btn   { color: var(--final-color); }
+    .section-tone .auto-btn    { color: var(--tone-color); }
+    .auto-btn:active { transform: scale(0.92); }
+    @keyframes auto-pulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.8); }
+        50% { box-shadow: 0 0 0 0.35em rgba(255,255,255,0); }
+    }
+
+    /* 輪播中的牌卡 */
+    .tile.autoplaying { z-index: 3; animation: tile-pop 0.25s ease-out; }
+    .section-initial .tile.autoplaying { background-color: var(--initial-color); border-color: var(--initial-color) !important; }
+    .section-final .tile.autoplaying   { background-color: var(--final-color);   border-color: var(--final-color) !important; }
+    .section-tone .tile.autoplaying    { background-color: var(--tone-color);    border-color: var(--tone-color) !important; }
+    .tile.autoplaying .tile-text,
+    .tile.autoplaying .tone-ex-top { color: #fff; }
+    @keyframes tile-pop {
+        from { transform: scale(0.92); }
+        to { transform: scale(1); }
     }
 
     .section-initial .section-label { background-color: var(--initial-color); }
@@ -152,8 +196,8 @@
     }
 
     .section-final .row {
-        flex-grow: 0;
-        height: 52px;
+        flex: 1 0 34px; /* 撐滿可用高度，放不下才捲動 */
+        height: auto;
     }
 
     .category-label {
@@ -591,8 +635,8 @@
         text-align: center;
     }
 
-    /* Mobile Optimization */
-    @media (max-width: 768px) {
+    /* Mobile／直向螢幕：上下堆疊（手機、直立平板） */
+    @media (max-width: 768px), (orientation: portrait) {
         #game-container {
             width: 100vw;
             height: 100vh;
@@ -627,14 +671,15 @@
         }
 
         .row {
-            height: 50px !important;
+            height: clamp(46px, 7.5vmin, 80px) !important;
             margin-bottom: 2px;
         }
-        
+
         .section-final .row {
-            height: 50px !important;
-            flex-grow: 0;
+            height: clamp(46px, 7.5vmin, 80px) !important;
+            flex: 0 0 auto;
         }
+
 
         .section-label {
             padding: 8px 0;
@@ -659,14 +704,15 @@
         }
 
         .play-btn {
-            width: 20px;
-            height: 20px;
-            font-size: 2.5vmin;
+            width: clamp(20px, 4vmin, 30px);
+            height: clamp(20px, 4vmin, 30px);
+            font-size: clamp(9px, 2.2vmin, 15px);
         }
 
         #footer-area {
             flex: 0 0 auto;
             height: calc(11vh + env(safe-area-inset-bottom, 0px)); /* 手機版高度減半（原 22vh），組合區改左右並排 */
+            max-height: 150px;
             min-height: 76px;
             border-radius: 15px 15px 0 0;
             border-bottom: none;
@@ -726,6 +772,28 @@
         }
     }
 
+    /* 橫向矮螢幕（手機橫拿）：字放大、標題列與按鈕縮小留空間給牌卡 */
+    @media (orientation: landscape) and (max-height: 500px) and (min-width: 769px) {
+        #game-container { height: calc(var(--app-h, 100dvh) - 4px); max-width: none; width: 100vw; border-radius: 0; padding: 2px; }
+        .section-label { font-size: 4vmin; padding: 2px 0; }
+        .tile-text { font-size: 5vmin; }
+        .section-tone .tile-text { font-size: 6vmin; }
+        .category-label { font-size: 2.6vmin; }
+        .play-btn { width: 15px; height: 15px; font-size: 8px; }
+        .tone-ex-top { font-size: 3.6vmin; }
+        .tone-ex-emoji { font-size: 5vmin; }
+        .combo-label { font-size: 2.6vmin; }
+        .combo-val { font-size: 4.5vmin; }
+        .action-btn { font-size: 4vmin; }
+        #display-result span { font-size: 3vmin !important; }
+        #footer-area { margin-top: 2px; padding: 3px; border-width: 2px; }
+    }
+
+    /* 大螢幕（電子白板、投影） */
+    @media (min-width: 1600px) and (min-height: 900px) {
+        .play-btn { width: 24px; height: 24px; font-size: 12px; }
+    }
+
 </style>
 <script>
     /* 手機瀏覽器（含 LINE 內建瀏覽器）100vh 會算進底部工具列，改用實際可視高度 */
@@ -748,7 +816,7 @@
     <div class="game-area">
         
         <div class="section section-initial" style="flex: 2.2;">
-            <div class="section-label">聲母</div>
+            <div class="section-label">聲母<button class="auto-btn" data-auto="initial" title="輪播聲母" aria-label="輪播聲母" onclick="toggleAutoPlay('initial', this)"></button></div>
             <div class="section-content">
                 <div class="row">
                     <div class="category-label">合唇音</div>
@@ -774,7 +842,7 @@
         </div>
 
         <div class="section section-final" style="flex: 4;">
-            <div class="section-label"><a class="egg-link" href="https://cyril-mingdao.github.io/Similar-sounds/" target="_blank" rel="noopener">韻母</a></div>
+            <div class="section-label"><a class="egg-link" href="https://cyril-mingdao.github.io/Similar-sounds/" target="_blank" rel="noopener">韻母</a><button class="auto-btn" data-auto="final" title="輪播韻母" aria-label="輪播韻母" onclick="toggleAutoPlay('final', this)"></button></div>
             <div class="section-content">
                 <div class="row">
                     <div class="category-label">元音</div>
@@ -841,7 +909,7 @@
         </div>
 
         <div class="section section-tone" style="flex: 1.2;">
-            <div class="section-label"><a class="egg-link" href="https://kr.hujiang.com/fayinbiao/#pindu" target="_blank" rel="noopener">聲調</a></div>
+            <div class="section-label"><a class="egg-link" href="https://kr.hujiang.com/fayinbiao/#pindu" target="_blank" rel="noopener">聲調</a><button class="auto-btn" data-auto="tone" title="輪播聲調" aria-label="輪播聲調" onclick="toggleAutoPlay('tone', this)"></button></div>
             <div class="section-content">
                 <div class="row" id="tone-number-row">
                     </div>
@@ -1180,6 +1248,7 @@
                             e.stopPropagation();
                             playSound(item.u);
                         };
+                        tile._u = item.u;
 
                         const textSpan = document.createElement('span');
                         textSpan.className = 'tile-text';
@@ -1230,6 +1299,7 @@
                 openModal(item);
             };
             
+            item._tiles = [numTile, exTile];
             exTile.appendChild(topSpan);
             exTile.appendChild(botSpan);
             exRow.appendChild(exTile);
@@ -1238,6 +1308,7 @@
 
     // --- Interaction Logic ---
     function playSound(url) {
+        stopAutoPlay();
         if (!url) return;
         audioPlayer.src = url;
         audioPlayer.play().catch(e => console.log("Audio play error", e));
@@ -1271,6 +1342,85 @@
         replayBtn.classList.remove('active');
         lastGeneratedSound = '';
         lastGeneratedAudioName = '';
+    }
+
+    // --- 輪播：依序播放一整區音檔，播放中的牌卡換底色並捲到看得到的位置 ---
+    let autoRun = null;
+
+    function stopAutoPlay() {
+        if (!autoRun) return;
+        autoRun.cancelled = true;
+        autoRun = null;
+        audioPlayer.pause();
+        document.querySelectorAll('.tile.autoplaying').forEach(el => el.classList.remove('autoplaying'));
+        document.querySelectorAll('.auto-btn.playing').forEach(btn => btn.classList.remove('playing'));
+    }
+
+    function toggleAutoPlay(type, btn) {
+        const same = autoRun && autoRun.type === type;
+        stopAutoPlay();
+        if (!same) runAutoPlay(type, btn);
+    }
+
+    // 只捲動牌卡所在的捲動容器（電腦版是各區內容、手機版是整個遊戲區），讓牌卡置中可見
+    function revealTile(tile) {
+        let box = tile.parentElement;
+        while (box && box !== document.body) {
+            const oy = getComputedStyle(box).overflowY;
+            if ((oy === 'auto' || oy === 'scroll') && box.scrollHeight > box.clientHeight + 1) {
+                const b = box.getBoundingClientRect();
+                const t = tile.getBoundingClientRect();
+                if (t.top < b.top + 4 || t.bottom > b.bottom - 4) {
+                    box.scrollBy({ top: (t.top + t.height / 2) - (b.top + b.height / 2), behavior: 'smooth' });
+                }
+                return;
+            }
+            box = box.parentElement;
+        }
+    }
+
+    function playToEnd(url, run) {
+        return new Promise(resolve => {
+            let done = false;
+            const finish = () => {
+                if (done) return;
+                done = true;
+                audioPlayer.removeEventListener('ended', finish);
+                audioPlayer.removeEventListener('error', finish);
+                clearInterval(watch);
+                clearTimeout(guard);
+                resolve();
+            };
+            const watch = setInterval(() => { if (run.cancelled) finish(); }, 100);
+            const guard = setTimeout(finish, 15000);
+            audioPlayer.addEventListener('ended', finish);
+            audioPlayer.addEventListener('error', finish);
+            audioPlayer.src = url;
+            audioPlayer.play().catch(finish);
+        });
+    }
+
+    async function runAutoPlay(type, btn) {
+        const run = { type, cancelled: false };
+        autoRun = run;
+        btn.classList.add('playing');
+
+        const seq = (type === 'tone')
+            ? tonesData.map(t => ({ u: t.u, tiles: t._tiles }))
+            : [...document.querySelectorAll(`.tile[data-type="${type}"]`)]
+                .filter(t => t._u)
+                .map(t => ({ u: t._u, tiles: [t] }));
+
+        for (const step of seq) {
+            if (run.cancelled) return;
+            step.tiles.forEach(t => t.classList.add('autoplaying'));
+            revealTile(step.tiles[step.tiles.length - 1]);
+            await playToEnd(step.u, run);
+            step.tiles.forEach(t => t.classList.remove('autoplaying'));
+            if (run.cancelled) return;
+            await new Promise(r => setTimeout(r, 250));
+        }
+        if (autoRun === run) stopAutoPlay();
     }
 
     // --- Modal Logic ---
@@ -1341,7 +1491,8 @@
 
     // --- Logic ---
     function submitAnswer() {
-        // Auto-fill Zero Initial
+        stopAutoPlay();
+// Auto-fill Zero Initial
         if (currentState.initial === null) {
             currentState.initial = '';
             document.getElementById('display-initial').textContent = '∅';
